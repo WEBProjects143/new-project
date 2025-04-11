@@ -54,8 +54,14 @@ exports.loginUser = async (req, res) => {
 //get all users detail
 exports.getUsers = async (req, res) => {
     try {
-        const users = await User.find().select('-password');
-        res.status(200).json(users);
+        const isadmin=await User.findById(req.user.id).select('-password');
+        const {role}=isadmin
+        if(role=="admin"){
+            const users = await User.find().select('-password');
+            res.status(200).json(users);
+        }else{
+            res.status(403).json({msg:"Only admin can access User details"});
+        }
     } catch (err) {
         console.log(err.message);
         res.status(500).send('Server error');
